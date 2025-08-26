@@ -6,6 +6,7 @@ import pandas as pd
 from app.logger import logger
 from app.config import DB_PATH
 
+
 class JobDatabase:
     def __init__(self, db_path=DB_PATH):
         self.db_path = db_path
@@ -14,9 +15,21 @@ class JobDatabase:
         os.makedirs(os.path.dirname(self.db_path) or ".", exist_ok=True)
 
         self.job_columns = [
-            "id", "title", "PositionURI", "company", "location", "category",
-            "career_level", "start_date", "description", "requirements",
-            "fetched_at", "score", "reason"
+            "id",
+            "title",
+            "PositionURI",
+            "company",
+            "location",
+            "category",
+            "career_level",
+            "start_date",
+            "description",
+            "requirements",
+            "posted_at",
+            "score",
+            "reason",
+            "PublicationStartDate",
+            "PublicationEndDate",
         ]
 
         self.conn = None
@@ -52,6 +65,8 @@ class JobDatabase:
                     score TEXT,
                     reason INTEGER,
                     eval_option TEXT,
+                    PublicationStartDate TEXT,
+                    PublicationEndDate TEXT,
                     UNIQUE(id)
                 )
             """
@@ -73,8 +88,8 @@ class JobDatabase:
             insert_sql = """
                 INSERT OR IGNORE INTO jobs
                 (id, title, PositionURI, company, location, category, career_level,
-                 start_date, description, requirements, fetched_at, score, eval_option, reason)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 start_date, description, requirements, fetched_at, score, eval_option, reason, PublicationStartDate, PublicationEndDate)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
             self.conn.execute(
                 insert_sql,
@@ -92,7 +107,9 @@ class JobDatabase:
                     datetime.utcnow().isoformat(),
                     -1,
                     "Base",
-                    ""
+                    "",
+                    job["PublicationStartDate"],
+                    job["PublicationEndDate"],
                 ),
             )
             self.conn.commit()
@@ -130,7 +147,7 @@ class JobDatabase:
         except Exception as e:
             logger.error(f"Count failed: {e}")
             return 0
-        
+
     def edit_job(self, job_id, key, value):
         """
         Update the value of a specific job field.
@@ -148,12 +165,12 @@ class JobDatabase:
             logger.error(f"Update failed for job {job_id}: {e}")
 
     @property
-    def table_df(self)->pd.DataFrame:
+    def table_df(self) -> pd.DataFrame:
         """Get jobs table as DataFrame"""
         jobs = self.fetch_all()
 
         return pd.DataFrame(jobs) if jobs else pd.DataFrame(columns=self.job_columns)
-    
+
     @property
     def all_ids(self):
         """Get all job IDs in the database"""
@@ -163,7 +180,7 @@ class JobDatabase:
         except Exception as e:
             logger.error(f"Fetch all IDs failed: {e}")
             return []
-        
+
     @property
     def all_jobs(self):
         """Get all jobs in the database"""

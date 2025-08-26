@@ -5,7 +5,7 @@ from app.model.jobDatabase import JobDatabase
 from app.model.preferencesDatabase import PreferencesDatabase
 from app.model.jobFetcher import JobFetcher
 from app.model.aiRecommender import AIRecommender
-from app.config import OPENAI_KEY, JOB_API
+from app.config import OPENAI_KEY, JOB_API_LINK
 
 from app.logger import logger
 
@@ -13,7 +13,7 @@ class Model:
     def __init__(self, db_path="jobs.db"):
         self.db_path = db_path
         self.api_key = OPENAI_KEY
-        self.job_api = JOB_API
+        self.job_api = JOB_API_LINK
 
         try:
             self.db = JobDatabase(db_path)

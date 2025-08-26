@@ -54,16 +54,23 @@ class View:
 
             st.subheader("👤 Your Profile")
             self.resume = st.text_area(
-                "Resume/CV", height=200, placeholder="Paste your resume text here...",
-                value=st.session_state.get("resume", ""), on_change=self.update_resume
+                "Resume/CV",
+                height=200,
+                placeholder="Paste your resume text here...",
+                value=st.session_state.get("resume", ""),
+                on_change=self.update_resume,
             )
             self.preferences = st.text_area(
-                "Job Preferences", placeholder="e.g., remote work, flexible hours...",
-                value=st.session_state.get("preferences", ""), on_change=self.update_preferences
+                "Job Preferences",
+                placeholder="e.g., remote work, flexible hours...",
+                value=st.session_state.get("preferences", ""),
+                on_change=self.update_preferences,
             )
 
             # Select Model
-            self._model_select = st.selectbox("Select Model", ["gpt-4o-mini", "o3-mini", "gpt-5"])
+            self._model_select = st.selectbox(
+                "Select Model", ["gpt-4o-mini", "o3-mini", "gpt-5"]
+            )
 
             # Re-Evaluate Button
             self._re_evaluate_button = st.button("🔃 Re-Evaluate Jobs")
@@ -84,9 +91,7 @@ class View:
 
         column_config = {
             "id": None,
-            "PositionURI": st.column_config.LinkColumn(
-                "URI", display_text="Link"
-            ),
+            "PositionURI": st.column_config.LinkColumn("URI", display_text="Link"),
             "company": None,
             "location": None,
             "category": None,
@@ -98,14 +103,26 @@ class View:
             "score": st.column_config.ProgressColumn(
                 "Score", format="%.1f", width=80, min_value=0, max_value=10
             ),
-            "eval_option": None
+            "eval_option": None,
+            "PublicationStartDate": st.column_config.DateColumn(
+                "Publication Start Date", format="DD-MM-YYYY"
+            ),
+            "PublicationEndDate": st.column_config.DateColumn(
+                "Publication End Date", format="DD-MM-YYYY"
+            ),
         }
 
         # If table is already filled, clear it
         if hasattr(self, "_job_table"):
             self._job_table.empty()
 
-        self._job_table = st.dataframe(jobs, column_config=column_config, hide_index=True)
+        self._job_table = st.dataframe(
+            jobs,
+            column_config=column_config,
+            hide_index=True,
+            use_container_width=True,
+            height=700,
+        )
 
     def update_resume(self):
         st.session_state["resume"] = self.resume
@@ -124,7 +141,7 @@ class View:
     @property
     def fetch_jobs(self):
         return self._fetch_jobs
-    
+
     @property
     def selected_model(self):
         return self._model_select

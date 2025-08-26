@@ -36,7 +36,7 @@ class JobFetcher:
             }
 
             logger.info("Fetching jobs from API...")
-            resp = requests.get(self.API_URL, headers=headers, params=params, timeout=30)
+            resp = requests.get(self.job_api, headers=headers, params=params, timeout=30)
             resp.raise_for_status()
 
             data = resp.json()
@@ -81,6 +81,8 @@ class JobFetcher:
                                 "Qualifications", ""
                             )
                         ),
+                        "PublicationStartDate": desc.get("PublicationStartDate", ""),
+                        "PublicationEndDate": desc.get("PublicationEndDate", ""),
                     }
 
                     job["eval_option"] = "Base"  # Default evaluation option
